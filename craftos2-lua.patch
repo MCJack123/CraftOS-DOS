@@ -1,0 +1,81 @@
+diff --git a/src/Makefile b/src/Makefile
+index 37a8e80..44a1e94 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -29,7 +29,7 @@ LUA_A?=	liblua.a
+ LUA_D?= liblua.so
+ CORE_O=	lapi.o lcode.o ldebug.o ldo.o ldump.o lfunc.o lgc.o llex.o lmem.o \
+ 	lobject.o lopcodes.o lparser.o lstate.o lstring.o ltable.o ltm.o  \
+-	lundump.o lvm.o lzio.o llock.o
++	lundump.o lvm.o lzio.o
+ LIB_O=	lauxlib.o lbaselib.o ldblib.o liolib.o lmathlib.o loslib.o ltablib.o \
+ 	lstrlib.o loadlib.o linit.o lutf8lib.o lbitlib.o
+ 
+@@ -40,8 +40,8 @@ LUAC_T=	luac
+ LUAC_O=	luac.o print.o
+ 
+ ALL_O= $(CORE_O) $(LIB_O) $(LUA_O) $(LUAC_O)
+-ALL_T= $(LUA_D)
+-ALL_A= $(LUA_D)
++ALL_T= $(LUA_A)
++ALL_A= $(LUA_A)
+ 
+ default: $(PLAT)
+ 
+@@ -191,6 +191,5 @@ lzio.o: lzio.c lua.h luaconf.h llimits.h lmem.h lstate.h lobject.h ltm.h \
+   lzio.h
+ print.o: print.c ldebug.h lstate.h lua.h luaconf.h lobject.h llimits.h \
+   ltm.h lzio.h lmem.h lopcodes.h lundump.h
+-llock.o: llock.cpp lua.h luaconf.h lstate.h
+ 
+ # (end of Makefile)
+diff --git a/src/llimits.h b/src/llimits.h
+index 964ed5c..65e068a 100644
+--- a/src/llimits.h
++++ b/src/llimits.h
+@@ -106,10 +106,10 @@ typedef lu_int32 Instruction;
+ #endif
+ 
+ /* Use external C++ locks to help with multi-threading */
+-extern void _lua_lock(lua_State *L);
++/*extern void _lua_lock(lua_State *L);
+ extern void _lua_unlock(lua_State *L);
+ #define lua_lock _lua_lock
+-#define lua_unlock _lua_unlock
++#define lua_unlock _lua_unlock*/
+ 
+ #ifndef lua_lock
+ #define lua_lock(L)     ((void) 0) 
+diff --git a/src/lstate.c b/src/lstate.c
+index a694f78..361fa4c 100644
+--- a/src/lstate.c
++++ b/src/lstate.c
+@@ -38,8 +38,8 @@ typedef struct LG {
+ } LG;
+   
+ /* forward declarations for lock creation/deletion */
+-void * _lua_newlock();
+-void _lua_freelock(void *);
++/*void * _lua_newlock();
++void _lua_freelock(void *);*/
+ 
+ static void stack_init (lua_State *L1, lua_State *L) {
+   /* initialize CallInfo array */
+@@ -121,7 +121,7 @@ static void close_state (lua_State *L) {
+   luaM_freearray(L, g->ropestack, g->ropestacksize, TRope *);
+   lua_assert(g->totalbytes == sizeof(LG));
+   if (g->lockstate) lua_unlock(L);
+-  _lua_freelock(g->lock);
++  //_lua_freelock(g->lock);
+   (*g->frealloc)(g->ud, fromstate(L), state_size(LG), 0);
+ }
+ 
+@@ -188,7 +188,7 @@ LUA_API lua_State *lua_newstate (lua_Alloc f, void *ud) {
+   g->gcpause = LUAI_GCPAUSE;
+   g->gcstepmul = LUAI_GCMUL;
+   g->gcdept = 0;
+-  g->lock = _lua_newlock();
++  //g->lock = _lua_newlock();
+   g->lockstate = 0;
+   g->haltstate = 0;
+   g->ropestacksize = 8;

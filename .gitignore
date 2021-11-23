@@ -1,0 +1,8 @@
+.vscode
+build
+*.exe
+*.EXE
+*.a
+*.img
+FDOS
+rootfs
