@@ -44,14 +44,14 @@ qemu-system-i386 -hda CraftOS-DOS.img
 ### Booting with VirtualBox
 First, you'll need to convert the image to a VDI with `VBoxManage`:
 ```
-VBoxManage convertfromraw CraftOSOS.img CraftOSOS.vdi --format VDI
+VBoxManage convertfromraw CraftOS-DOS.img CraftOS-DOS.vdi --format VDI
 ```
 Then create an Other OS VM using the VDI created earlier.
 
 ### Installing on a real system
 Connect a hard drive or USB disk (provided your system can emulate USB as IDE), and flash the IMG file to the entire disk (NOT a partition!). On Windows, Rufus should work fine for this. On Mac or Linux, you can run this command:
 ```
-sudo dd if=CraftOSOS.img of=/dev/<disk> bs=512
+sudo dd if=CraftOS-DOS.img of=/dev/<disk> bs=512
 ```
 where `<disk>` is the name of the disk's block device, found on Mac with `diskutil list` and on Linux with `lsblk`. Then connect the boot medium to the target system. Finally, boot to the drive normally.
 
