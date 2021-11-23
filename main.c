@@ -1,4 +1,4 @@
-#include "lua/lauxlib.h"
+#include <lauxlib.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

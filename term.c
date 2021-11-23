@@ -1,7 +1,7 @@
 #undef __STRICT_ANSI__
 #include "term.h"
 #include "font.h"
-#include "lua/lua.h"
+#include <lua.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>

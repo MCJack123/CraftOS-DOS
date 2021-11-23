@@ -6,7 +6,7 @@
 #include <pc.h>
 #include <sys/time.h>
 #include <signal.h>
-#include "lua/lauxlib.h"
+#include <lauxlib.h>
 #include "queue.h"
 
 int running = 1;

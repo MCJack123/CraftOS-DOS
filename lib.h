@@ -3,8 +3,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "lua/lua.h"
-#include "lua/lualib.h"
+#include <lua.h>
+#include <lualib.h>
 
 typedef struct library {
     const char * name;
