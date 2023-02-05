@@ -35,6 +35,44 @@ if _VERSION == "Lua 5.1" then
         end
     end
 
+    if not fs.find then
+        local function splitPath(p)
+            local retval = {}
+            for m in p:gmatch("[^/]+") do table.insert(retval, m) end
+            return retval
+        end
+
+        local function aux_find(parts, p)
+            local ok, t = pcall(fs.list, p or "")
+            if #parts == 0 then return fs.getName(p) elseif not ok then return nil end
+            local parts2 = {}
+            for i, v in ipairs(parts) do parts2[i] = v end
+            local name = table.remove(parts2, 1)
+            local retval = {}
+            for _, k in pairs(t) do if k:match("^" .. name:gsub("([%%%.])", "%%%1"):gsub("%*", "%.%*") .. "$") then retval[k] = aux_find(parts2, fs.combine(p or "", k)) end end
+            return retval
+        end
+
+        local function combineKeys(t, prefix)
+            prefix = prefix or ""
+            if t == nil then return {} end
+            local retval = {}
+            for k,v in pairs(t) do
+                if type(v) == "string" then table.insert(retval, prefix .. k)
+                else for _,w in ipairs(combineKeys(v, prefix .. k .. "/")) do table.insert(retval, w) end end
+            end
+            return retval
+        end
+
+        function fs.find(wildcard)
+            if type(wildcard) ~= "string" then error("bad argument #1 (expected string, got " .. type(wildcard) .. ")", 2) end
+            local retval = {}
+            for _,v in ipairs(combineKeys(aux_find(splitPath(wildcard)))) do table.insert(retval, v) end
+            table.sort(retval)
+            return retval
+        end
+    end
+
     function load( x, name, mode, env )
         if type( x ) ~= "string" and type( x ) ~= "function" then
             error( "bad argument #1 (expected string or function, got " .. type( x ) .. ")", 2 ) 

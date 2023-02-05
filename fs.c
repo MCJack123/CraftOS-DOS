@@ -7,9 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include <sys/statvfs.h>
 #include <errno.h>
-#include <glob.h>
 #include <dirent.h>
 #define true 1
 #define false 0
@@ -80,6 +78,11 @@ int fs_isReadOnly(lua_State *L) {
     lua_pushboolean(L, access(path, W_OK) != 0);
     free(path);
     return 1;
+}
+
+static char * basename(const char *filename) {
+  char *p = strrchr(filename, '/');
+  return p ? p + 1 : (char*)filename;
 }
 
 int fs_getName(lua_State *L) {
@@ -166,11 +169,7 @@ int fs_getSize(lua_State *L) {
 }
 
 int fs_getFreeSpace(lua_State *L) {
-    struct statvfs st;
-    char * path = fixpath(lua_tostring(L, 1));
-    if (statvfs(path, &st) != 0) err(L, path, "No such file or directory");
-    lua_pushinteger(L, st.f_bavail * st.f_bsize);
-    free(path);
+    lua_pushinteger(L, 1000000);
     return 1;
 }
 
@@ -365,24 +364,6 @@ static int fs_open(lua_State *L) {
     return 1;
 }
 
-int fs_find(lua_State *L) {
-    glob_t g;
-    int i;
-    int rval = 0;
-    const char * wildcard = lua_tostring(L, 1);
-    lua_newtable(L);
-    rval = glob(wildcard, 0, NULL, &g);
-    if (rval == 0) {
-        for (i = 0; i < g.gl_pathc; i++) {
-            lua_pushnumber(L, i + 1);
-            lua_pushstring(L, g.gl_pathv[i]);
-            lua_settable(L, -3);
-        }
-        globfree(&g);
-    }
-    return 1;
-}
-
 int fs_getDir(lua_State *L) {
     char * path = unconst(lua_tostring(L, 1));
     lua_pushstring(L, dirname(path));
@@ -405,7 +386,6 @@ const char * fs_keys[16] = {
     "delete",
     "combine",
     "open",
-    "find",
     "getDir"
 };
 
@@ -424,8 +404,7 @@ lua_CFunction fs_values[16] = {
     fs_delete,
     fs_combine,
     fs_open,
-    fs_find,
     fs_getDir
 };
 
-library_t fs_lib = {"fs", 16, fs_keys, fs_values};
+library_t fs_lib = {"fs", 15, fs_keys, fs_values};

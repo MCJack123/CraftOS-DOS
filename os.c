@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <pc.h>
 #include <sys/time.h>
 #include <signal.h>
 #include <lauxlib.h>
@@ -62,6 +61,14 @@ struct timer_t * timerList = NULL;
 int timerListSize = 16;
 extern void cursorTimer(int sig);
 clock_t cursorTime = 0;
+
+unsigned char inp(unsigned short port) {
+    unsigned char ret;
+    asm volatile ( "inb %1, %0"
+                   : "=a"(ret)
+                   : "Nd"(port) );
+    return ret;
+}
 
 void alarmCallback(int sig) {
     clock_t now = clock();
