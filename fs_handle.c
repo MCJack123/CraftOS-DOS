@@ -77,22 +77,22 @@ int fs_handle_readChar(lua_State *L) {
             if (c & 64) {
                 const int c2 = fgetc(fp);
                 if (c2 == EOF) {*cur++ = '?'; break;}
-                else if (c2 >= 0 || c2 & 64) codepoint = 1U<<31;
+                else if (c2 >= 0 || c2 & 64) codepoint = 0x80000000U;
                 else if (c & 32) {
                     const int c3 = fgetc(fp);
                     if (c3 == EOF) {*cur++ = '?'; break;}
-                    else if (c3 >= 0 || c3 & 64) codepoint = 1U<<31;
+                    else if (c3 >= 0 || c3 & 64) codepoint = 0x80000000U;
                     else if (c & 16) {
-                        if (c & 8) codepoint = 1U<<31;
+                        if (c & 8) codepoint = 0x80000000U;
                         else {
                             const int c4 = fgetc(fp);
                             if (c4 == EOF) {*cur++ = '?'; break;}
-                            else if (c4 >= 0 || c4 & 64) codepoint = 1U<<31;
+                            else if (c4 >= 0 || c4 & 64) codepoint = 0x80000000U;
                             else codepoint = ((c & 0x7) << 18) | ((c2 & 0x3F) << 12) | ((c3 & 0x3F) << 6) | (c4 & 0x3F);
                         }
                     } else codepoint = ((c & 0xF) << 12) | ((c2 & 0x3F) << 6) | (c3 & 0x3F);
                 } else codepoint = ((c & 0x1F) << 6) | (c2 & 0x3F);
-            } else codepoint = 1U<<31;
+            } else codepoint = 0x80000000U;
         } else codepoint = (unsigned char)c;
         if (codepoint > 255) *cur++ = '?';
         else {

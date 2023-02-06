@@ -15,6 +15,26 @@
 #define MAX_PATH 260
 #endif
 
+char* basename(char* path) {
+	char* filename = strrchr(path, '/');
+	if (filename == NULL)
+		filename = path;
+	else
+		filename++;
+	//strcpy(path, filename);
+	return filename;
+}
+
+char* dirname(char* path) {
+	if (path[0] == '/') strcpy(path, &path[1]);
+    char tch;
+    if (strrchr(path, '/') != NULL) tch = '/';
+    else if (strrchr(path, '\\') != NULL) tch = '\\';
+    else return path;
+    path[strrchr(path, tch) - path] = '\0';
+	return path;
+}
+
 char * fixpath(const char * path) {
     char * retval = (char*)malloc(strlen(path) + 2);
     if (path[0] != '/') {
@@ -78,11 +98,6 @@ int fs_isReadOnly(lua_State *L) {
     lua_pushboolean(L, access(path, W_OK) != 0);
     free(path);
     return 1;
-}
-
-static char * basename(const char *filename) {
-  char *p = strrchr(filename, '/');
-  return p ? p + 1 : (char*)filename;
 }
 
 int fs_getName(lua_State *L) {
@@ -174,10 +189,10 @@ int fs_getFreeSpace(lua_State *L) {
 }
 
 int recurse_mkdir(const char * path) {
-    if (mkdir(path, 0777) != 0) {
+    if (mkdir(path) != 0) {
         if (errno == ENOENT && strcmp(path, "/") != 0) {
             if (recurse_mkdir(dirname(unconst(path)))) return 1;
-            mkdir(path, 0777);
+            mkdir(path);
         } else return 1;
     }
     return 0;
