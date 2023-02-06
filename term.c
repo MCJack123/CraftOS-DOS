@@ -82,8 +82,8 @@ int term_write(lua_State *L) {
         if (x < 0) continue;
         screen[cursorY*TERM_WIDTH+x] = str[i] | current_colors;
     }
-    if (cursorX + len > 0) blit_line(cursorY, cursorX > 0 ? cursorX : 0, cursorX + len >= TERM_WIDTH ? TERM_WIDTH - 1 : cursorX + len - 1);
-    if (cursorX >= 0 && cursorX < TERM_WIDTH && cursorY >= 0 && cursorY < TERM_HEIGHT) blit_line(cursorY, cursorX, cursorX);
+    //if (cursorX + len > 0) blit_line(cursorY, cursorX > 0 ? cursorX : 0, cursorX + len >= TERM_WIDTH ? TERM_WIDTH - 1 : cursorX + len - 1);
+    //if (cursorX >= 0 && cursorX < TERM_WIDTH && cursorY >= 0 && cursorY < TERM_HEIGHT) blit_line(cursorY, cursorX, cursorX);
     cursorX += len;
     redrawCursor();
     return 0;
@@ -101,12 +101,12 @@ int term_scroll(lua_State *L) {
         memmove(screen - scroll * TERM_WIDTH, screen, (TERM_HEIGHT + scroll) * TERM_WIDTH * 2);
         memset(screen, 0, -scroll * TERM_WIDTH * 2);
     }
-    blit_screen();
+    //blit_screen();
     return 0;
 }
 
 int term_setCursorPos(lua_State *L) {
-    if (cursorX >= 0 && cursorX < TERM_WIDTH && cursorY >= 0 && cursorY < TERM_HEIGHT) blit_line(cursorY, cursorX, cursorX);
+    //if (cursorX >= 0 && cursorX < TERM_WIDTH && cursorY >= 0 && cursorY < TERM_HEIGHT) blit_line(cursorY, cursorX, cursorX);
     cursorX = lua_tointeger(L, 1)-1;
     cursorY = lua_tointeger(L, 2)-1;
     redrawCursor();
@@ -133,14 +133,14 @@ int term_getSize(lua_State *L) {
 
 int term_clear(lua_State *L) {
     memset(screen, 0, TERM_WIDTH * TERM_HEIGHT * 2);
-    blit_screen();
+    //blit_screen();
     return 0;
 }
 
 int term_clearLine(lua_State *L) {
     if (cursorY < 0 || cursorY >= TERM_HEIGHT) return 0;
     memset(&screen[cursorY*TERM_WIDTH], 0, TERM_WIDTH * 2);
-    blit_line(cursorY, 0, TERM_WIDTH-1);
+    //blit_line(cursorY, 0, TERM_WIDTH-1);
     return 0;
 }
 
@@ -188,8 +188,8 @@ int term_blit(lua_State *L) {
         if (x < 0) continue;
         screen[cursorY*TERM_WIDTH+x] = str[i] | (hexch(fg[i]) << 8) | (hexch(bg[i]) << 12);
     }
-    if (cursorX + len > 0) blit_line(cursorY, cursorX > 0 ? cursorX : 0, cursorX + len >= TERM_WIDTH ? TERM_WIDTH - 1 : cursorX + len - 1);
-    if (cursorX >= 0 && cursorX < TERM_WIDTH && cursorY >= 0 && cursorY < TERM_HEIGHT) blit_line(cursorY, cursorX, cursorX);
+    //if (cursorX + len > 0) blit_line(cursorY, cursorX > 0 ? cursorX : 0, cursorX + len >= TERM_WIDTH ? TERM_WIDTH - 1 : cursorX + len - 1);
+    //if (cursorX >= 0 && cursorX < TERM_WIDTH && cursorY >= 0 && cursorY < TERM_HEIGHT) blit_line(cursorY, cursorX, cursorX);
     cursorX += len;
     redrawCursor();
     return 0;
